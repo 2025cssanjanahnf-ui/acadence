@@ -1,0 +1,13 @@
+{
+  "name": "acadence",
+  "version": "1.0.0",
+  "description": "ACADENCE — From Academic Information to Action. AI-powered academic workload intelligence platform.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["acadence", "lms", "academic-intelligence", "workload-intelligence", "ai-planning"],
+  "author": "",
+  "license": "ISC"
+}
