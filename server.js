@@ -14,11 +14,12 @@ const MIME_TYPES = {
   '.jpg': 'image/jpeg',
   '.gif': 'image/gif',
   '.svg': 'image/svg+xml',
-  '.ico': 'image/x-icon'
+  '.ico': 'image/x-icon',
+  '.pdf': 'application/pdf'
 };
 
 const server = http.createServer((req, res) => {
-  let reqUrl = req.url.split('?')[0];
+  let reqUrl = decodeURIComponent(req.url.split('?')[0]);
   let filePath = path.join(__dirname, reqUrl === '/' ? 'index.html' : reqUrl);
 
   const ext = path.extname(filePath).toLowerCase();

@@ -2,81 +2,66 @@
  * ACADENCE - Application Bootstrapper
  * Tagline: FROM ACADEMIC INFORMATION TO ACTION
  * 
- * Coordinates the reactive bridge between Virtual LMS (Faculty) and ACADENCE (Student).
+ * Unifies the platform into ONE coherent, light ACADENCE product.
+ * Preserves the reactive bridge between Faculty LMS actions and student intelligence.
  */
 
 import { store } from './store.js';
 import { AcadenceAIEngine } from './ai-engine.js';
 import { FacultyLMSComponent } from './components/faculty-lms.js';
 import { AcadenceStudentComponent } from './components/acadence-student.js';
-import { DemoController } from './components/demo-controller.js';
 
 class AcadenceApp {
   constructor() {
     this.store = store;
     this.aiEngine = new AcadenceAIEngine(this.store);
 
-    this.faculty = new FacultyLMSComponent(this.store, 'faculty-lms-container');
-    this.student = new AcadenceStudentComponent(this.store, this.aiEngine, 'acadence-student-container');
-    this.demoController = new DemoController(this.store, this.faculty, this.student, 'demo-controller-container');
+    this.student = new AcadenceStudentComponent(
+      this.store,
+      this.aiEngine,
+      'acadence-student-container'
+    );
+
+    this.faculty = new FacultyLMSComponent(
+      this.store,
+      'faculty-lms-container'
+    );
 
     this.init();
   }
 
   init() {
-    // Render components
-    this.faculty.render();
-    this.student.render();
-    this.demoController.render();
+    const params = new URLSearchParams(window.location.search);
+    const facultyMode = params.get('faculty') === '1';
 
-    // Subscribe to store updates for automatic reactive re-render
-    this.store.subscribe((state) => {
-      this.updateViewMode(state.viewMode);
-      this.faculty.render();
-      this.student.render();
-    });
+    const studentContainer = document.getElementById('acadence-student-container');
+    const facultyContainer = document.getElementById('faculty-lms-container');
 
-    // Initial view mode
-    this.updateViewMode(this.store.getState().viewMode);
-    this.bindViewSwitcher();
-  }
-
-  bindViewSwitcher() {
-    document.querySelectorAll('.view-switcher-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const mode = e.currentTarget.dataset.mode;
-        this.store.setViewMode(mode);
-      });
-    });
-  }
-
-  updateViewMode(mode) {
-    const mainContainer = document.getElementById('app-main-layout');
-    const facultyPane = document.getElementById('faculty-lms-container');
-    const studentPane = document.getElementById('acadence-student-container');
-
-    document.querySelectorAll('.view-switcher-btn').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.mode === mode);
-    });
-
-    if (mainContainer) {
-      mainContainer.className = `app-layout layout-${mode}`;
+    if (facultyMode) {
+      document.body.classList.add('faculty-mode');
+      if (studentContainer) studentContainer.style.display = 'none';
+      if (facultyContainer) {
+        facultyContainer.classList.remove('faculty-hidden');
+        facultyContainer.style.display = 'block';
+        this.faculty.render();
+      }
+    } else {
+      if (facultyContainer) facultyContainer.style.display = 'none';
+      if (studentContainer) {
+        studentContainer.style.display = 'block';
+        this.student.render();
+      }
     }
 
-    if (mode === 'split') {
-      if (facultyPane) facultyPane.style.display = 'block';
-      if (studentPane) studentPane.style.display = 'block';
-    } else if (mode === 'student') {
-      if (facultyPane) facultyPane.style.display = 'none';
-      if (studentPane) studentPane.style.display = 'block';
-    } else if (mode === 'faculty') {
-      if (facultyPane) facultyPane.style.display = 'block';
-      if (studentPane) studentPane.style.display = 'none';
-    }
+    // Reactive store subscription: re-render on any LMS update
+    this.store.subscribe(() => {
+      if (facultyMode) {
+        this.faculty.render();
+      } else {
+        this.student.render();
+      }
+    });
   }
 }
 
-// Bootstrap on DOM ready
-document.addEventListener('DOMContentLoaded', () => {
-  window.acadenceApp = new AcadenceApp();
-});
+new AcadenceApp();

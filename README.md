@@ -1,82 +1,84 @@
 # ACADENCE
 ### **FROM ACADEMIC INFORMATION TO ACTION**
 
-> **AI-Powered Academic Workload Intelligence Platform**  
-> *Transforming scattered LMS updates, announcements, and syllabi into actionable student decisions.*
+> **Academic Workload Intelligence Platform**  
+> *Transforming scattered LMS updates, announcements, and lab materials into clear, actionable student decisions.*
 
 ---
 
-## 1. Executive Overview
+## 1. Product Identity
 
-Traditional Learning Management Systems (LMS) present academic data as static silos: assignments, dates, announcements, and files. Students are left with fragmented answers to critical daily dilemmas:
+**ACADENCE** is an academic workload intelligence platform. It helps students understand:
 
-- *"What do I need to do today?"*
-- *"A deadline moved from Friday to Wednesday — how does that compress my week?"*
-- *"Will this 6-hour assignment collide with my exam preparation?"*
-- *"Is a teammate's delayed deliverable blocking my work on our group project?"*
+- **What they need to do**
+- **When they need to do it**
+- **What exactly is required**
+- **How much effort it may take** (~45 min, ~1 hr, ~1 hr 30 min, ~2 hr)
+- **What has changed** (e.g., deadline Friday → Wednesday)
+- **What affects their project** (e.g., upstream milestone delays)
+- **What they should prepare next** (e.g., upcoming lab program from the real manual)
+- **What currently needs attention**
 
-**ACADENCE** is not a generic calendar, to-do app, or chatbot. It is an **Academic Workload Intelligence Layer** that sits on top of institutional LMS feeds to continuously ingest, extract, detect changes, calculate workload, trace dependencies, and synthesize a realistic daily action plan.
+ACADENCE is **not**:
+- A generic to-do app
+- A reminder app
+- A study planner or daily hour-by-hour scheduler
+- A chatbot
+- A calendar-only product
+
+**Core Principle:** Technical complexity stays behind the interface; the student-facing UI remains simple, calm, and readable.
+
+---
+
+## 2. Architecture & Data Flow
 
 ```
-       FACULTY / VIRTUAL LMS
-                 ↓
-        Academic Data Layer
-                 ↓
-        AI Processing Engine
-  [Extraction • Change Detection • Dependencies • Capacity]
-                 ↓
-     ACADENCE Intelligence Layer
-                 ↓
-[Today's Action Plan • Urgency Alerts • Study Balancer]
+   FACULTY / LMS PORTAL                        ACADENCE PLATFORM
+   • Publish / Edit Assignments                1. Academic Calendar (Main Page)
+   • Announce Lab Experiments                  2. Dashboard (What Needs Attention)
+   • Upload Course Materials (PDF/PPT/DOC)     3. Assignments & Submissions
+   • Reschedule Examinations                   4. Lab Prep (Real 44-Page DSA Manual)
+               │                               5. Exams (Faculty Topics & Remaining Days)
+               │ (Reactive Data Bridge)        6. Projects (Dependency Flow & Done Actions)
+               ▼                               7. Academic Changes (What Changed & Impact)
+   Reactive Academic State (Store) ───────────► Instant Student Re-render
 ```
 
 ---
 
-## 2. Core Capabilities
+## 3. Real DSA Lab PDF Integration
 
-### 1. Dual Connected Portals
-- **Side A: Virtual LMS / Faculty Portal**
-  - Course Management (DBMS, Operating Systems, Computer Networks, Data Structures, Web Development)
-  - Assignment Publishing & Rescheduling (Deadlines, submission formats, page constraints, mandatory sections)
-  - Faculty Announcement Broadcaster (Lab notices, review chapters)
-  - Document Repository with Context Tagging (`DBMS Lab Experiment 4.pdf`, `Unit 3 Notes.pdf`)
-  - Examination Schedule Publisher
-  - Team Project Management & Milestone Status
+ACADENCE directly integrates the authentic 44-page **DSA Lab Record** (`Lab Manual 1-10 Programs.pdf`), containing Programs 1 to 10.
 
-- **Side B: ACADENCE / Student Intelligence Platform**
-  - **What Needs Attention**: Multi-attribute priority engine ranking with transparent **"WHY THIS IS PRIORITIZED"** rationales.
-  - **Academic Change Detection**: Real-time diffing of previous vs. new parameters, lost preparation days, and plan ripple effects.
-  - **Today's Action Plan**: Capacity-fitted daily execution schedule balancing available study hours against realistic task durations.
-  - **Submission Checklist**: Auto-generated deliverables verification checklist.
-  - **Deadline ≠ Workload Contrast**: Explicit analysis demonstrating why tasks with distant deadlines but heavy workloads must start early.
-  - **Recurring Lab Intelligence**: Automated preparation synthesis linking announcements with lab manual documents and confidence scoring.
-  - **Project Dependency Risk Intelligence**: Blameless critical path analysis showing how upstream delays ripple to downstream milestones.
-  - **AI Exam Planner**: Dynamic syllabus balancer distributing revision modules across available days while throttling load on assignment deadline days.
-  - **Academic Calendar & Workload Spikes**: Visual load heatmaps and spike explanations (e.g. Wednesday overlap).
+- **Faculty Announcement Flow:** When faculty announces an upcoming DSA experiment (e.g. Program 4, Program 5, Program 8, etc.), ACADENCE identifies the exact program in the uploaded manual.
+- **Student Lab Prep:** Displays *only* the upcoming program:
+  - Exact program title and page reference (e.g., Pages 11–19 of 44)
+  - Original problem statement from the manual
+  - Original C source code
+  - Expected execution output from the manual
+  - Preparation and viva topics supported by the document
+  - Built-in **Interactive PDF Viewer** (`[Open PDF]`) with page navigation and zoom
+- **Strict Matching:** If an announcement cannot be confidently matched, ACADENCE displays:
+  > *"Unable to identify the upcoming program from the available lab material."*  
+  *(Never guesses or invents content)*
 
 ---
 
-## 3. The 9-Step Critical Demo Workflow
+## 4. Student Navigation Order
 
-ACADENCE includes an interactive top walkthrough controller enabling 1-click execution of the hackathon demonstration:
-
-| Step | Action | Engine Reaction |
-|---|---|---|
-| **Step 1** | Faculty publishes *DBMS Assignment 3* (Friday, PDF, ER diagram, SQL queries, Report) | Initial academic payload ingested into institutional feed. |
-| **Step 2** | Student opens ACADENCE | AI extracts structured requirements (no guessing; "Not specified" for unmentioned fields), generates 6-item checklist, estimates 4–6h workload. |
-| **Step 3** | Faculty edits assignment: Friday → Wednesday, PDF → DOCX | Version 2 published. |
-| **Step 4** | ACADENCE detects change | **URGENT ACADEMIC UPDATE** triggered: 2 fewer preparation days, format shift to DOCX, priority escalated to High, Today's Plan rescheduled. |
-| **Step 5** | Faculty broadcasts *"Experiment 4: Joins"* and uploads `DBMS Lab Experiment 4.pdf` | Document context evaluated. |
-| **Step 6** | ACADENCE synthesizes Lab Prep | 94% High Confidence match confirmed; pre-lab action blueprint (Aim, Procedure, Queries, Output, Record, Viva) created for 45–60 min effort. |
-| **Step 7** | Student opens Projects | Member A's Backend task is overdue; **PROJECT RISK DETECTED** visualizes downstream blockage (Backend → Frontend → Testing → Docs → Final) blamelessly. |
-| **Step 8** | Student opens Exam Planner | DBMS Exam (Oct 20) topics distributed across available days; Oct 17 study block reduced due to Assignment submission overlap. |
-| **Step 9** | Student opens Today's Action Plan | All priorities synthesized into a 3h 45m schedule fitted cleanly within student's 4.0h capacity with 15m buffer. |
+1. **Academic Calendar** *(First / Main Page)*: Clean calendar grid with color-coded assignments, labs, exams, and project milestones.
+2. **Dashboard**: Features **WHAT NEEDS ATTENTION** (prioritized colored cards: RED for urgent, ORANGE for upcoming lab, YELLOW for this week) and **OTHER UPCOMING WORK**.
+3. **Assignments & Submissions**: Colored cards showing subject, title, due date/time, practical workload estimate, status, context, and modal with progressive disclosure (*View Work Breakdown*, *View Full Requirements*, *View Change History*).
+4. **Lab Prep**: Focused upcoming laboratory preparation powered by the real 44-page DSA PDF.
+5. **Exams**: Subject, exam date, dynamically calculated remaining days, faculty-provided topics, and source.
+6. **Projects**: Visual dependency chain (*Backend → Frontend → Testing → Documentation → Final Submission*) with individual *[Mark as Done]* buttons updating downstream task statuses.
+7. **Academic Changes**: Grouped record of schedule and format modifications with data-grounded impact statements (*"You now have 2 fewer preparation days"*).
 
 ---
 
-## 4. Running the Prototype Locally
+## 5. Running the Application Locally
 
-The project includes a built-in zero-dependency Node.js HTTP server:
+The application runs using a zero-dependency Node.js HTTP server:
 
 ```bash
 # 1. Start the server (port 3000)
@@ -91,14 +93,9 @@ Open your browser to:
 http://localhost:3000
 ```
 
-### View Options:
-- **Split View (LMS + ACADENCE)**: Recommended for live demonstrations to see immediate cause-and-effect.
-- **Student View**: Focus exclusively on the ACADENCE student interface.
-- **Faculty View**: Focus exclusively on the Virtual LMS administrative portal.
-
----
-
-## 5. Technology Stack & Design Principles
-- **Core Architecture**: Modern HTML5, ES Modules (Vanilla JavaScript), CSS Custom Properties (Vanilla CSS).
-- **Design Philosophy**: Deep Slate Dark Mode (`#090d16`, `#0f172a`), Inter typography, harmonious accent tokens (Indigo, Emerald, Amber, Rose, Sky, Violet), accessible focus states, zero external dependencies.
-- **Ethics & Privacy**: Zero personal names used (strictly generic identities: *Student*, *Professor*, *Member A*, *Member B*, *Member C*, *Member D*). Strict adherence to institutional API boundaries.
+### Accessing the Simulated Faculty LMS:
+- Click the **"Faculty LMS Simulation"** button in the ACADENCE header, or navigate directly to:
+  ```
+  http://localhost:3000/?faculty=1
+  ```
+- Edit an assignment deadline, announce a different DSA lab program, or upload a document to observe real-time reactive updates on the student platform.

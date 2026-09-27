@@ -2,8 +2,9 @@
  * ACADENCE - Reactive Academic Data Layer & Store
  * Tagline: FROM ACADEMIC INFORMATION TO ACTION
  * 
- * Handles centralized state between Virtual LMS (Faculty) and ACADENCE (Student Intelligence).
- * Emits reactive events so any faculty update immediately triggers AI recalculation.
+ * Centralized state for ACADENCE.
+ * Clean, student-facing academic data structures.
+ * Connects LMS updates directly to the student platform.
  */
 
 class AcadenceStore {
@@ -14,26 +15,32 @@ class AcadenceStore {
 
   initDefaultState() {
     this.state = {
-      viewMode: 'split', // 'split', 'student', 'faculty'
-      studentAvailableHours: 4.0,
-      
+      // Courses
       courses: [
-        { id: 'CS301', name: 'Database Management Systems (DBMS)', code: 'CS301', faculty: 'Professor', credits: 4, color: '#6366f1' },
-        { id: 'CS302', name: 'Operating Systems (OS)', code: 'CS302', faculty: 'Faculty', credits: 4, color: '#0ea5e9' },
-        { id: 'CS303', name: 'Computer Networks (CN)', code: 'CS303', faculty: 'Professor', credits: 3, color: '#10b981' },
-        { id: 'CS201', name: 'Data Structures & Algorithms', code: 'CS201', faculty: 'Faculty', credits: 4, color: '#f59e0b' },
-        { id: 'CS305', name: 'Web Development', code: 'CS305', faculty: 'Professor', credits: 3, color: '#ec4899' }
+        { id: 'CS301', name: 'Database Management Systems (DBMS)', code: 'CS301', faculty: 'Professor', credits: 4, color: '#4f46e5' },
+        { id: 'CS201', name: 'Data Structures & Algorithms (DSA)', code: 'CS201', faculty: 'DSA Faculty', credits: 4, color: '#ea580c' },
+        { id: 'CS302', name: 'Operating Systems (OS)', code: 'CS302', faculty: 'OS Faculty', credits: 4, color: '#d97706' },
+        { id: 'CS303', name: 'Computer Networks (CN)', code: 'CS303', faculty: 'Professor', credits: 3, color: '#2563eb' },
+        { id: 'CS305', name: 'Web Development', code: 'CS305', faculty: 'Professor', credits: 3, color: '#0d9488' }
       ],
 
+      // Assignments & Submissions
       assignments: [
         {
           id: 'asg_dbms_3',
           title: 'DBMS Assignment 3',
           courseId: 'CS301',
           courseName: 'DBMS',
-          description: 'Submit DBMS Assignment 3 by Friday. Prepare ER diagram and SQL queries. Upload the report in PDF format through the LMS portal.',
-          deadline: 'Friday, 5:00 PM',
-          rawDeadline: 'Friday, 5:00 PM',
+          description: 'Prepare ER diagram and SQL queries. Upload the report through the LMS portal.',
+          deadline: 'Wednesday, 5:00 PM',
+          rawDeadline: 'Wednesday, 5:00 PM',
+          dueDay: 'Wednesday',
+          dueDate: 'Oct 01',
+          dueTime: '5:00 PM',
+          estimatedWorkload: '~1 hr',
+          urgencyLevel: 'urgent', // 'urgent' (red), 'upcoming' (orange), 'this_week' (yellow), 'normal' (blue), 'completed' (green)
+          status: 'Needs Attention',
+          context: 'Deadline changed from Friday to Wednesday.',
           submissionFormat: 'PDF',
           pageLimit: '10 pages',
           submissionLocation: 'LMS portal',
@@ -44,35 +51,50 @@ class AcadenceStore {
           additionalInstructions: 'Ensure SQL queries are tested against PostgreSQL schema provided in Unit 2.',
           marks: 'Not specified',
           published: true,
-          version: 1,
+          version: 2,
           createdAt: '2026-09-24T09:00:00Z',
-          updatedAt: '2026-09-24T09:00:00Z',
+          updatedAt: '2026-09-27T08:30:00Z',
           history: [
+            {
+              version: 2,
+              deadline: 'Wednesday, 5:00 PM',
+              format: 'PDF',
+              pageLimit: '10 pages',
+              timestamp: 'Today, 08:30 AM',
+              note: 'Deadline shifted earlier from Friday to Wednesday'
+            },
             {
               version: 1,
               deadline: 'Friday, 5:00 PM',
               format: 'PDF',
               pageLimit: '10 pages',
-              timestamp: '2 days ago',
-              source: 'Virtual LMS Initial Publishing'
+              timestamp: '3 days ago',
+              note: 'Initial publishing'
             }
           ]
         },
         {
           id: 'asg_os_2',
-          title: 'OS Tutorial 2: Semaphore Synchronization',
+          title: 'OS Tutorial 2',
           courseId: 'CS302',
           courseName: 'Operating Systems',
           description: 'Solve the bounded-buffer producer-consumer problem using POSIX semaphores and mutexes.',
-          deadline: 'Next Monday, 11:59 PM',
-          rawDeadline: 'Next Monday, 11:59 PM',
+          deadline: 'Monday, 11:59 PM',
+          rawDeadline: 'Monday, 11:59 PM',
+          dueDay: 'Monday',
+          dueDate: 'Oct 06',
+          dueTime: '11:59 PM',
+          estimatedWorkload: '~1 hr',
+          urgencyLevel: 'this_week',
+          status: 'This Week',
+          context: 'Practice problems on Semaphore synchronization and mutex locking.',
           submissionFormat: 'PDF',
           pageLimit: '5 pages',
           submissionLocation: 'LMS portal',
           isGroup: false,
           requiredSections: ['Synchronization Pseudo-code', 'Deadlock Analysis', 'Output Traces'],
           requiredFiles: ['solution.pdf', 'main.c'],
-          presentationRequired: 'No',
+          presentationRequired: 'Not specified',
           additionalInstructions: 'Include terminal screenshots of execution without race conditions.',
           marks: '25 Marks',
           published: true,
@@ -82,11 +104,11 @@ class AcadenceStore {
           history: [
             {
               version: 1,
-              deadline: 'Next Monday, 11:59 PM',
+              deadline: 'Monday, 11:59 PM',
               format: 'PDF',
               pageLimit: '5 pages',
-              timestamp: '3 days ago',
-              source: 'Virtual LMS Initial Publishing'
+              timestamp: '4 days ago',
+              note: 'Initial publishing'
             }
           ]
         },
@@ -96,8 +118,15 @@ class AcadenceStore {
           courseId: 'CS303',
           courseName: 'Computer Networks',
           description: 'Implement a multi-client TCP chat server with connection multiplexing using select() or poll().',
-          deadline: 'In 8 days, 5:00 PM',
-          rawDeadline: 'In 8 days, 5:00 PM',
+          deadline: 'Next Friday, 5:00 PM',
+          rawDeadline: 'Next Friday, 5:00 PM',
+          dueDay: 'Friday',
+          dueDate: 'Oct 10',
+          dueTime: '5:00 PM',
+          estimatedWorkload: '~2 hr',
+          urgencyLevel: 'normal',
+          status: 'Upcoming',
+          context: 'Multi-client TCP communication with connection multiplexing.',
           submissionFormat: 'ZIP',
           pageLimit: 'Not specified',
           submissionLocation: 'LMS portal',
@@ -114,93 +143,103 @@ class AcadenceStore {
           history: [
             {
               version: 1,
-              deadline: 'In 8 days, 5:00 PM',
+              deadline: 'Next Friday, 5:00 PM',
               format: 'ZIP',
               pageLimit: 'Not specified',
-              timestamp: '4 days ago',
-              source: 'Virtual LMS Initial Publishing'
+              timestamp: '5 days ago',
+              note: 'Initial publishing'
             }
           ]
         }
       ],
 
+      // Announcements from Faculty
       announcements: [
         {
-          id: 'ann_1',
-          courseId: 'CS301',
-          courseName: 'DBMS',
-          author: 'Professor',
-          title: 'Upcoming DBMS Lab Session: Experiment 4',
-          content: 'DBMS Lab next week will cover Experiment 4: Joins. Students should prepare the experiment before attending.',
+          id: 'ann_dsa_1',
+          courseId: 'CS201',
+          courseName: 'DSA',
+          author: 'DSA Faculty',
+          title: 'Upcoming DSA Lab Session: Program 4',
+          content: 'Upcoming DSA Lab will cover Program 4: Singly Linked List operations. Students should prepare the required program before attending the lab session.',
           timestamp: 'Today, 08:30 AM',
-          source: 'DBMS Faculty Announcement',
-          experimentNum: 4,
-          topic: 'Joins'
+          source: 'DSA Faculty Announcement',
+          programNumber: 4,
+          topic: 'Singly Linked List'
         },
         {
-          id: 'ann_2',
+          id: 'ann_os_1',
           courseId: 'CS302',
           courseName: 'Operating Systems',
-          author: 'Faculty',
-          title: 'OS Tutorial Notes Released',
-          content: 'Practice problems on Peterson Algorithm and Bakery Algorithm have been uploaded. Review before Friday tutorial.',
+          author: 'OS Faculty',
+          title: 'OS Tutorial 2 Notes Uploaded',
+          content: 'Practice problems on Semaphore synchronization and mutex locking have been uploaded for Monday preparation.',
           timestamp: 'Yesterday, 04:15 PM',
           source: 'OS Faculty Announcement'
         }
       ],
 
+      // LMS Document Repository (Real 44-Page DSA PDF as primary lab source)
       documents: [
         {
-          id: 'doc_1',
-          filename: 'DBMS Lab Experiment 4.pdf',
-          courseId: 'CS301',
-          courseName: 'DBMS',
-          title: 'Lab Manual - Experiment 4: Relational Joins & Subqueries',
-          size: '1.4 MB',
-          uploadedAt: 'Today, 09:10 AM',
+          id: 'doc_dsa_lab',
+          filename: 'Lab Manual 1-10 Programs.pdf',
+          filePath: 'docs/Lab Manual 1-10 Programs.pdf',
+          courseId: 'CS201',
+          courseName: 'DSA',
+          title: 'DSA Lab Record (Programs 1 to 10)',
+          type: 'PDF',
           category: 'Lab Manual',
-          relevanceTag: 'HIGH',
-          relevanceConfidence: 0.94,
-          relevanceExplanation: 'High confidence — Directly matches Faculty Announcement context: "Experiment 4: Joins". Identifies core lab deliverables and SQL schema.',
-          deliverables: [
-            'Aim: Master Inner, Left Outer, Right Outer, and Full Outer Joins',
-            'Algorithm / Procedure: Formulate query logic on 4-table employee relational schema',
-            'SQL Queries: Write and execute 6 join queries with nested subselects',
-            'Expected Output: Tabular output with NULL handling for outer joins',
-            'Lab Record: Handwritten record format with ER schema snapshot',
-            'Viva Preparation: Join complexity, Cartesian product vs Hash Join'
-          ]
+          pageCount: 44,
+          size: '245 KB',
+          updatedAt: 'Sep 24, 2026',
+          usedIn: 'Lab Prep'
         },
         {
-          id: 'doc_2',
-          filename: 'DBMS Unit 3 Notes.pdf',
+          id: 'doc_dbms_guide',
+          filename: 'DBMS Assignment 3 Guide.pdf',
+          filePath: 'docs/Lab Manual 1-10 Programs.pdf', // Fallback accessible viewer path
           courseId: 'CS301',
           courseName: 'DBMS',
-          title: 'Unit 3: Relational Calculus & Query Optimization',
-          size: '3.8 MB',
-          uploadedAt: '3 days ago',
-          category: 'Lecture Notes',
-          relevanceTag: 'LOW',
-          relevanceConfidence: 0.28,
-          relevanceExplanation: 'Low confidence — unable to confidently identify relevant preparation material for tomorrow\'s lab. Contains theoretical query optimization, not lab experiment instructions.',
-          deliverables: []
+          title: 'Relational Schema & Query Specifications',
+          type: 'PDF',
+          category: 'Assignment Guide',
+          pageCount: 8,
+          size: '1.2 MB',
+          updatedAt: 'Sep 22, 2026',
+          usedIn: 'DBMS Assignment 3'
         },
         {
-          id: 'doc_3',
-          filename: 'Computer Networks Lab.pdf',
+          id: 'doc_os_notes',
+          filename: 'OS Semaphore & Mutex Notes.pdf',
+          filePath: 'docs/Lab Manual 1-10 Programs.pdf',
+          courseId: 'CS302',
+          courseName: 'Operating Systems',
+          title: 'Process Synchronization Lecture Slides',
+          type: 'PDF',
+          category: 'General Notes',
+          pageCount: 16,
+          size: '2.4 MB',
+          updatedAt: 'Sep 20, 2026',
+          usedIn: 'OS Tutorial 2'
+        },
+        {
+          id: 'doc_cn_lab',
+          filename: 'CN Socket Programming Manual.pdf',
+          filePath: 'docs/Lab Manual 1-10 Programs.pdf',
           courseId: 'CS303',
           courseName: 'Computer Networks',
-          title: 'CN Lab Experiment 2: Wireshark Packet Sniffing',
-          size: '2.1 MB',
-          uploadedAt: '5 days ago',
+          title: 'TCP/IP Socket API Handbook',
+          type: 'PDF',
           category: 'Lab Manual',
-          relevanceTag: 'NONE',
-          relevanceConfidence: 0.02,
-          relevanceExplanation: 'Not relevant — Belongs to a different subject (Computer Networks). Does not apply to DBMS preparation.',
-          deliverables: []
+          pageCount: 22,
+          size: '3.1 MB',
+          updatedAt: 'Sep 18, 2026',
+          usedIn: 'CN Assignment'
         }
       ],
 
+      // Projects (Visual dependency chain with self-managed Done buttons)
       projects: [
         {
           id: 'proj_web_app',
@@ -208,63 +247,59 @@ class AcadenceStore {
           courseId: 'CS305',
           courseName: 'Web Development',
           teamName: 'Dev Squad 4',
-          description: 'Full-stack university portal with role-based access control and microservices.',
-          teamMembers: ['Member A', 'Member B', 'Member C', 'Member D'],
+          description: 'Full-stack university portal with course registration and student records.',
+          currentStudentMember: 'Member B',
           tasks: [
             {
               id: 'task_backend',
-              name: 'Backend API & Database Schema',
+              name: 'Backend',
               owner: 'Member A',
-              deadline: 'Yesterday (Overdue)',
-              status: 'overdue', // 'completed', 'in_progress', 'overdue', 'blocked'
-              estimatedHours: 12,
-              dependsOn: [],
-              isMyTask: false
+              dueDay: 'Sep 20',
+              status: 'overdue', // 'overdue', 'waiting', 'in_progress', 'done'
+              isMyTask: false,
+              dependsOn: []
             },
             {
               id: 'task_frontend',
-              name: 'Frontend UI Integration',
+              name: 'Frontend',
               owner: 'Member B',
-              deadline: 'In 2 days',
-              status: 'blocked',
-              estimatedHours: 10,
-              dependsOn: ['task_backend'],
-              isMyTask: true // Logged-in Student
+              dueDay: 'Sep 22',
+              status: 'waiting',
+              isMyTask: true, // Current student
+              dependsOn: ['task_backend']
             },
             {
               id: 'task_testing',
-              name: 'Integration Testing & API Validation',
+              name: 'Testing',
               owner: 'Member C',
-              deadline: 'In 4 days',
-              status: 'blocked',
-              estimatedHours: 6,
-              dependsOn: ['task_frontend'],
-              isMyTask: false
+              dueDay: 'Sep 24',
+              status: 'waiting',
+              isMyTask: false,
+              dependsOn: ['task_frontend']
             },
             {
               id: 'task_docs',
-              name: 'Architecture & Technical Documentation',
+              name: 'Documentation',
               owner: 'Member D',
-              deadline: 'In 5 days',
-              status: 'blocked',
-              estimatedHours: 4,
-              dependsOn: ['task_testing'],
-              isMyTask: false
+              dueDay: 'Sep 25',
+              status: 'upcoming',
+              isMyTask: false,
+              dependsOn: ['task_testing']
             },
             {
               id: 'task_final',
-              name: 'Final Deployment & LMS Submission',
-              owner: 'Team Member',
-              deadline: 'In 6 days',
-              status: 'blocked',
-              estimatedHours: 3,
-              dependsOn: ['task_docs'],
-              isMyTask: false
+              name: 'Final Submission',
+              owner: 'Team',
+              dueDay: 'Sep 28',
+              status: 'upcoming',
+              isMyTask: false,
+              dependsOn: ['task_docs']
             }
           ]
         }
       ],
 
+      // Exams (Faculty syllabus-backed topics, not a study planner)
       exams: [
         {
           id: 'exam_dbms',
@@ -273,14 +308,12 @@ class AcadenceStore {
           date: 'October 20',
           isoDate: '2026-10-20',
           weightage: '40% of Final Grade',
-          status: 'upcoming',
-          syllabus: [
-            { id: 'top_1', name: 'ER Model & Relational Algebra', targetDate: 'October 15', status: 'completed', hours: 2.5, completed: true },
-            { id: 'top_2', name: 'SQL & Complex Joins', targetDate: 'October 16', status: 'pending', hours: 3.0, completed: false },
-            { id: 'top_3', name: 'Normalization (1NF, 2NF, 3NF, BCNF)', targetDate: 'October 17', status: 'pending', hours: 2.0, completed: false, workloadAdjustment: 'Adjusted: Lightened due to Assignment 3 submission overlap' },
-            { id: 'top_4', name: 'Transactions & Concurrency Control', targetDate: 'October 18', status: 'pending', hours: 2.5, completed: false },
-            { id: 'top_5', name: 'Previous-Year Questions & Revision', targetDate: 'October 19', status: 'pending', hours: 3.0, completed: false },
-            { id: 'top_6', name: 'Final Exam Sitting', targetDate: 'October 20', status: 'exam_day', hours: 0, completed: false }
+          source: 'Faculty Examination Guide',
+          topics: [
+            'ER Model & Relational Algebra',
+            'SQL & Complex Joins',
+            'Normalization (1NF, 2NF, 3NF, BCNF)',
+            'Transactions & Concurrency Control'
           ]
         },
         {
@@ -290,59 +323,60 @@ class AcadenceStore {
           date: 'October 28',
           isoDate: '2026-10-28',
           weightage: '40% of Final Grade',
-          status: 'upcoming',
-          syllabus: [
-            { id: 'os_1', name: 'Processes & Threads', targetDate: 'October 22', status: 'pending', hours: 2.5, completed: false },
-            { id: 'os_2', name: 'CPU Scheduling Algorithms', targetDate: 'October 23', status: 'pending', hours: 2.5, completed: false },
-            { id: 'os_3', name: 'Synchronization & Deadlocks', targetDate: 'October 24', status: 'pending', hours: 3.0, completed: false },
-            { id: 'os_4', name: 'Memory Management & Paging', targetDate: 'October 26', status: 'pending', hours: 3.0, completed: false },
-            { id: 'os_5', name: 'Virtual Memory & Revision', targetDate: 'October 27', status: 'pending', hours: 2.5, completed: false }
+          source: 'Faculty Syllabus Document',
+          topics: [
+            'Processes & Threads',
+            'CPU Scheduling Algorithms',
+            'Synchronization & Deadlocks',
+            'Memory Management & Paging'
           ]
         }
       ],
 
-      // Academic Changes detected by AI
-      changes: [],
+      // Academic Changes (Grouped by assignment, student-facing impact)
+      changes: [
+        {
+          id: 'change_dbms_deadline',
+          assignmentId: 'asg_dbms_3',
+          courseName: 'DBMS',
+          title: 'DBMS Assignment 3',
+          badge: 'Action Required',
+          urgency: 'high',
+          timestamp: 'Today, 08:30 AM',
+          changes: [
+            {
+              field: 'Deadline',
+              from: 'Friday, 5:00 PM',
+              to: 'Wednesday, 5:00 PM'
+            }
+          ],
+          whyItMatters: 'You now have 2 fewer preparation days.'
+        }
+      ],
 
-      // Smart notifications generated by AI
-      notifications: [],
-
-      // Student interactive checklist state (saved in localStorage or memory)
-      checklistState: {
-        'asg_dbms_3_er': false,
-        'asg_dbms_3_sql': false,
-        'asg_dbms_3_report': false,
-        'asg_dbms_3_format': false,
-        'asg_dbms_3_verify': false,
-        'asg_dbms_3_upload': false,
-        'lab_dbms_aim': true,
-        'lab_dbms_algo': true,
-        'lab_dbms_queries': false,
-        'lab_dbms_output': false,
-        'lab_dbms_record': false,
-        'lab_dbms_viva': false
-      },
-
-      // Custom student edited workload estimates
-      customWorkloadEstimates: {}
+      // User adjusted workload estimates
+      adjustedWorkload: {}
     };
 
-    // Load persisted state if exists
+    // Restore state from localStorage if valid
     try {
-      const saved = localStorage.getItem('acadence_prototype_state');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        // Merge selectively so new code structure is preserved
-        this.state = { ...this.state, ...parsed };
+      if (typeof window !== 'undefined' && window.localStorage) {
+        const saved = window.localStorage.getItem('acadence_v2_state');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          this.state = { ...this.state, ...parsed };
+        }
       }
     } catch (e) {
-      console.warn('Could not restore saved state', e);
+      console.warn('Could not restore state from storage', e);
     }
   }
 
   save() {
     try {
-      localStorage.setItem('acadence_prototype_state', JSON.stringify(this.state));
+      if (typeof window !== 'undefined' && window.localStorage) {
+        window.localStorage.setItem('acadence_v2_state', JSON.stringify(this.state));
+      }
     } catch (e) {
       console.warn('Could not save state', e);
     }
@@ -350,7 +384,7 @@ class AcadenceStore {
   }
 
   resetToDefault() {
-    localStorage.removeItem('acadence_prototype_state');
+    localStorage.removeItem('acadence_v2_state');
     this.initDefaultState();
     this.save();
   }
@@ -376,30 +410,50 @@ class AcadenceStore {
     return this.state;
   }
 
-  setViewMode(mode) {
-    this.state.viewMode = mode;
+  // --- WORKLOAD ESTIMATION ADJUSTMENT ---
+  adjustWorkload(itemId, newEstimate) {
+    this.state.adjustedWorkload[itemId] = newEstimate;
+    const asg = this.state.assignments.find(a => a.id === itemId);
+    if (asg) {
+      asg.estimatedWorkload = newEstimate;
+    }
     this.save();
   }
 
-  setAvailableHours(hours) {
-    this.state.studentAvailableHours = Math.max(1, Math.min(16, Number(hours)));
-    this.save();
-  }
+  // --- PROJECT TASK COMPLETION FLOW ---
+  markProjectTaskDone(projectId, taskId) {
+    const project = this.state.projects.find(p => p.id === projectId);
+    if (!project) return null;
 
-  toggleChecklist(id) {
-    this.state.checklistState[id] = !this.state.checklistState[id];
-    this.save();
-  }
+    const task = project.tasks.find(t => t.id === taskId);
+    if (!task) return null;
 
-  updateTaskEstimate(taskId, newHours) {
-    this.state.customWorkloadEstimates[taskId] = newHours;
+    // Mark task done
+    task.status = 'done';
+
+    // Update downstream tasks
+    project.tasks.forEach(t => {
+      if (t.dependsOn && t.dependsOn.includes(taskId)) {
+        // Check if all dependencies are done
+        const allDepsDone = t.dependsOn.every(depId => {
+          const dep = project.tasks.find(pt => pt.id === depId);
+          return dep && dep.status === 'done';
+        });
+
+        if (allDepsDone && t.status === 'waiting') {
+          t.status = 'in_progress';
+        }
+      }
+    });
+
     this.save();
+    return task;
   }
 
   // --- FACULTY / LMS MUTATIONS ---
 
   publishAssignment(assignmentData) {
-    const newAssignment = {
+    const newAsg = {
       id: assignmentData.id || `asg_${Date.now()}`,
       title: assignmentData.title,
       courseId: assignmentData.courseId,
@@ -407,14 +461,21 @@ class AcadenceStore {
       description: assignmentData.description || '',
       deadline: assignmentData.deadline,
       rawDeadline: assignmentData.deadline,
+      dueDay: assignmentData.dueDay || 'Upcoming',
+      dueDate: assignmentData.dueDate || 'Soon',
+      dueTime: assignmentData.dueTime || '5:00 PM',
+      estimatedWorkload: assignmentData.estimatedWorkload || '~1 hr',
+      urgencyLevel: 'this_week',
+      status: 'Upcoming',
+      context: assignmentData.context || 'New assignment published on LMS.',
       submissionFormat: assignmentData.submissionFormat || 'Not specified',
       pageLimit: assignmentData.pageLimit || 'Not specified',
       submissionLocation: assignmentData.submissionLocation || 'LMS portal',
       isGroup: Boolean(assignmentData.isGroup),
-      requiredSections: assignmentData.requiredSections || [],
-      requiredFiles: assignmentData.requiredFiles || [],
+      requiredSections: assignmentData.requiredSections || ['Not specified'],
+      requiredFiles: assignmentData.requiredFiles || ['Not specified'],
       presentationRequired: assignmentData.presentationRequired || 'Not specified',
-      additionalInstructions: assignmentData.additionalInstructions || '',
+      additionalInstructions: assignmentData.additionalInstructions || 'Not specified',
       marks: assignmentData.marks || 'Not specified',
       published: true,
       version: 1,
@@ -427,280 +488,177 @@ class AcadenceStore {
           format: assignmentData.submissionFormat || 'Not specified',
           pageLimit: assignmentData.pageLimit || 'Not specified',
           timestamp: 'Just now',
-          source: 'Virtual LMS Initial Publishing'
+          note: 'Initial publishing'
         }
       ]
     };
 
-    this.state.assignments.unshift(newAssignment);
-
-    // AI Notification
-    this.addNotification({
-      id: `notif_${Date.now()}`,
-      type: 'lms_assignment',
-      title: `New Assignment Published: ${newAssignment.title}`,
-      message: `Course ${newAssignment.courseName}: Due ${newAssignment.deadline}. Format: ${newAssignment.submissionFormat}. ACADENCE has automatically extracted requirements & workload.`,
-      timestamp: 'Just now',
-      source: 'Virtual LMS Portal',
-      course: newAssignment.courseName,
-      unread: true
-    });
-
+    this.state.assignments.unshift(newAsg);
     this.save();
-    return newAssignment;
+    return newAsg;
   }
 
   updateAssignment(assignmentId, updates) {
-    const asgIndex = this.state.assignments.findIndex(a => a.id === assignmentId);
-    if (asgIndex === -1) return null;
+    const asg = this.state.assignments.find(a => a.id === assignmentId);
+    if (!asg) return null;
 
-    const oldAsg = { ...this.state.assignments[asgIndex] };
-    const newVersion = oldAsg.version + 1;
+    const oldDeadline = asg.deadline;
+    const oldFormat = asg.submissionFormat;
+    const oldPageLimit = asg.pageLimit;
 
-    // Detect changes
-    const detectedDiffs = [];
-
-    if (updates.deadline && updates.deadline !== oldAsg.deadline) {
-      detectedDiffs.push({
+    const changedFields = [];
+    if (updates.deadline && updates.deadline !== oldDeadline) {
+      changedFields.push({
         field: 'Deadline',
-        oldValue: oldAsg.deadline,
-        newValue: updates.deadline,
-        impact: updates.deadline.toLowerCase().includes('wednesday') && oldAsg.deadline.toLowerCase().includes('friday')
-          ? '2 fewer preparation days (Urgent: schedule compressed)'
-          : 'Deadline timeline updated',
-        priorityShift: 'Increased to High'
+        from: oldDeadline,
+        to: updates.deadline
       });
+      asg.deadline = updates.deadline;
+      asg.rawDeadline = updates.deadline;
     }
-
-    if (updates.submissionFormat && updates.submissionFormat !== oldAsg.submissionFormat) {
-      detectedDiffs.push({
-        field: 'Submission Format',
-        oldValue: oldAsg.submissionFormat,
-        newValue: updates.submissionFormat,
-        impact: `Document format switched from ${oldAsg.submissionFormat} to ${updates.submissionFormat}. Requires re-exporting document template.`,
-        priorityShift: 'Action Required'
+    if (updates.submissionFormat && updates.submissionFormat !== oldFormat) {
+      changedFields.push({
+        field: 'Format',
+        from: oldFormat,
+        to: updates.submissionFormat
       });
+      asg.submissionFormat = updates.submissionFormat;
     }
-
-    if (updates.pageLimit && updates.pageLimit !== oldAsg.pageLimit) {
-      detectedDiffs.push({
+    if (updates.pageLimit && updates.pageLimit !== oldPageLimit) {
+      changedFields.push({
         field: 'Page Limit',
-        oldValue: oldAsg.pageLimit,
-        newValue: updates.pageLimit,
-        impact: `Document length constraint altered to ${updates.pageLimit}.`,
-        priorityShift: 'Review Needed'
+        from: oldPageLimit,
+        to: updates.pageLimit
       });
+      asg.pageLimit = updates.pageLimit;
     }
 
-    const updatedAsg = {
-      ...oldAsg,
-      ...updates,
-      version: newVersion,
-      updatedAt: new Date().toISOString(),
-      history: [
-        {
-          version: newVersion,
-          deadline: updates.deadline || oldAsg.deadline,
-          format: updates.submissionFormat || oldAsg.submissionFormat,
-          pageLimit: updates.pageLimit || oldAsg.pageLimit,
-          timestamp: 'Just now',
-          source: 'Virtual LMS Faculty Update'
-        },
-        ...oldAsg.history
-      ]
-    };
+    if (updates.title) asg.title = updates.title;
+    if (updates.description) asg.description = updates.description;
 
-    this.state.assignments[asgIndex] = updatedAsg;
+    asg.version = (asg.version || 1) + 1;
+    asg.updatedAt = new Date().toISOString();
 
-    // Record Academic Changes in audit trail
-    detectedDiffs.forEach(diff => {
-      const changeRecord = {
-        id: `change_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
-        assignmentId: updatedAsg.id,
-        courseName: updatedAsg.courseName,
-        taskTitle: updatedAsg.title,
-        version: `${oldAsg.version} → ${newVersion}`,
-        field: diff.field,
-        oldValue: diff.oldValue,
-        newValue: diff.newValue,
-        impact: diff.impact,
-        priorityDelta: diff.priorityShift,
-        whyItChangedPlan: `Faculty modified ${diff.field.toLowerCase()} from "${diff.oldValue}" to "${diff.newValue}". Available preparation window compressed; downstream workload reprioritized into Today's Action Plan.`,
-        detectedAt: 'Just now',
-        source: 'Virtual LMS Edit Event',
-        badge: 'URGENT ACADEMIC UPDATE'
-      };
+    // Determine impact statement grounded in data
+    let impact = 'Review updated assignment requirements.';
+    let badge = 'Academic Update';
+    let urgency = 'medium';
 
-      this.state.changes.unshift(changeRecord);
+    if (changedFields.some(c => c.field === 'Deadline')) {
+      const isEarlier = updates.deadline.toLowerCase().includes('wednesday') && oldDeadline.toLowerCase().includes('friday');
+      if (isEarlier) {
+        impact = 'You now have 2 fewer preparation days.';
+        badge = 'Action Required';
+        urgency = 'high';
+        asg.urgencyLevel = 'urgent';
+        asg.status = 'Needs Attention';
+        asg.context = `Deadline changed from ${oldDeadline} to ${updates.deadline}.`;
+      } else {
+        impact = `Deadline updated from ${oldDeadline} to ${updates.deadline}.`;
+        badge = 'Needs Attention';
+        urgency = 'medium';
+      }
+    }
 
-      // Trigger Smart Notification
-      this.addNotification({
-        id: `notif_${Date.now()}`,
-        type: 'urgent_change',
-        title: `URGENT ACADEMIC UPDATE: ${updatedAsg.title}`,
-        message: `${diff.field}: ${diff.oldValue} → ${diff.newValue}. Impact: ${diff.impact}. Priority Increased.`,
+    if (changedFields.some(c => c.field === 'Format')) {
+      impact += ` Template re-export required for ${updates.submissionFormat}.`;
+    }
+
+    // Add grouped change record
+    if (changedFields.length > 0) {
+      asg.history.unshift({
+        version: asg.version,
+        deadline: asg.deadline,
+        format: asg.submissionFormat,
+        pageLimit: asg.pageLimit,
         timestamp: 'Just now',
-        source: 'AI Change Detection Engine',
-        course: updatedAsg.courseName,
-        unread: true
+        note: changedFields.map(c => `${c.field}: ${c.from} → ${c.to}`).join(', ')
       });
-    });
+
+      this.state.changes.unshift({
+        id: `change_${Date.now()}`,
+        assignmentId: asg.id,
+        courseName: asg.courseName,
+        title: asg.title,
+        badge: badge,
+        urgency: urgency,
+        timestamp: 'Just now',
+        changes: changedFields,
+        whyItMatters: impact
+      });
+    }
 
     this.save();
-    return updatedAsg;
+    return asg;
   }
 
-  publishAnnouncement(announcementData) {
-    const newAnnouncement = {
-      id: announcementData.id || `ann_${Date.now()}`,
-      courseId: announcementData.courseId,
-      courseName: announcementData.courseName,
-      author: announcementData.author || 'Faculty',
-      title: announcementData.title,
-      content: announcementData.content,
+  publishAnnouncement(annData) {
+    const newAnn = {
+      id: annData.id || `ann_${Date.now()}`,
+      courseId: annData.courseId || 'CS201',
+      courseName: annData.courseName || 'DSA',
+      author: annData.author || 'Faculty',
+      title: annData.title,
+      content: annData.content,
       timestamp: 'Just now',
-      source: `${announcementData.courseName} Faculty Announcement`,
-      experimentNum: announcementData.experimentNum || null,
-      topic: announcementData.topic || null
+      source: `${annData.courseName || 'Faculty'} Announcement`,
+      programNumber: annData.programNumber || null
     };
 
-    this.state.announcements.unshift(newAnnouncement);
-
-    this.addNotification({
-      id: `notif_${Date.now()}`,
-      type: 'lab_prep',
-      title: `Faculty Announcement: ${newAnnouncement.courseName}`,
-      message: `"${newAnnouncement.title}" — ACADENCE has cross-referenced syllabus documents to build your pre-lab action checklist.`,
-      timestamp: 'Just now',
-      source: newAnnouncement.source,
-      course: newAnnouncement.courseName,
-      unread: true
-    });
-
+    this.state.announcements.unshift(newAnn);
     this.save();
-    return newAnnouncement;
+    return newAnn;
   }
 
   uploadDocument(docData) {
     const newDoc = {
       id: docData.id || `doc_${Date.now()}`,
       filename: docData.filename,
-      courseId: docData.courseId,
-      courseName: docData.courseName,
+      filePath: docData.filePath || 'docs/Lab Manual 1-10 Programs.pdf',
+      courseId: docData.courseId || 'CS201',
+      courseName: docData.courseName || 'DSA',
       title: docData.title || docData.filename,
-      size: docData.size || '1.2 MB',
-      uploadedAt: 'Just now',
-      category: docData.category || 'Lab Material',
-      relevanceTag: docData.relevanceTag || 'HIGH',
-      relevanceConfidence: docData.relevanceConfidence || 0.95,
-      relevanceExplanation: docData.relevanceExplanation || 'High confidence — Analyzed document content matches faculty lab announcement context.',
-      deliverables: docData.deliverables || [
-        'Aim and Objective',
-        'Algorithm and Schema definition',
-        'Execution Queries and Screenshots',
-        'Viva voce theoretical answers'
-      ]
+      type: docData.type || 'PDF',
+      category: docData.category || 'Lab Manual',
+      pageCount: docData.pageCount || 10,
+      size: docData.size || '1.0 MB',
+      updatedAt: 'Just now',
+      usedIn: docData.usedIn || 'Reference'
     };
 
     this.state.documents.unshift(newDoc);
-
-    this.addNotification({
-      id: `notif_${Date.now()}`,
-      type: 'document_intelligence',
-      title: `Document Uploaded: ${newDoc.filename}`,
-      message: `AI Confidence: ${Math.round(newDoc.relevanceConfidence * 100)}% relevant to ${newDoc.courseName}. Deliverables synthesized into Lab Prep.`,
-      timestamp: 'Just now',
-      source: 'Document AI Engine',
-      course: newDoc.courseName,
-      unread: true
-    });
-
     this.save();
     return newDoc;
   }
 
-  updateProjectTask(projectId, taskId, updates) {
-    const project = this.state.projects.find(p => p.id === projectId);
-    if (!project) return null;
-
-    const task = project.tasks.find(t => t.id === taskId);
-    if (!task) return null;
-
-    Object.assign(task, updates);
-
-    // If task status changed to overdue or completed, re-evaluate dependency chain
-    if (updates.status === 'overdue') {
-      this.addNotification({
-        id: `notif_${Date.now()}`,
-        type: 'project_risk',
-        title: `PROJECT RISK DETECTED: ${project.title}`,
-        message: `${task.name} is overdue. Affected downstream chain: ${task.name} → Frontend → Testing → Documentation. Multiple downstream milestones at risk.`,
-        timestamp: 'Just now',
-        source: 'Group Dependency Engine',
-        course: project.courseName,
-        unread: true
-      });
-    }
-
-    this.save();
-    return task;
-  }
-
-  updateExamDate(examId, newDate, newSyllabus) {
+  updateExamDate(examId, newDate) {
     const exam = this.state.exams.find(e => e.id === examId);
     if (!exam) return null;
 
     const oldDate = exam.date;
     exam.date = newDate;
-    if (newSyllabus) {
-      exam.syllabus = newSyllabus;
-    }
 
     this.state.changes.unshift({
-      id: `change_${Date.now()}`,
+      id: `change_exam_${Date.now()}`,
       assignmentId: exam.id,
       courseName: exam.subject,
-      taskTitle: `${exam.subject} Final Exam Schedule`,
-      version: 'Schedule Recalculation',
-      field: 'Exam Date',
-      oldValue: oldDate,
-      newValue: newDate,
-      impact: `Exam date shifted. Study blocks automatically redistributed across available prep days.`,
-      priorityDelta: 'Recalculated',
-      whyItChangedPlan: `Exam date changed by Academic Office. AI distributed remaining syllabus topics and balanced against overlapping assignment deliverables.`,
-      detectedAt: 'Just now',
-      source: 'Academic Calendar Sync',
-      badge: 'EXAM RESCHEDULED'
-    });
-
-    this.addNotification({
-      id: `notif_${Date.now()}`,
-      type: 'exam_planning',
-      title: `Exam Date Updated: ${exam.subject}`,
-      message: `Date shifted from ${oldDate} to ${newDate}. AI Study Plan has recalculated daily topic distribution.`,
+      title: `${exam.subject} Final Exam Schedule`,
+      badge: 'Academic Update',
+      urgency: 'medium',
       timestamp: 'Just now',
-      source: 'Exam Intelligence Engine',
-      course: exam.subject,
-      unread: true
+      changes: [
+        {
+          field: 'Exam Date',
+          from: oldDate,
+          to: newDate
+        }
+      ],
+      whyItMatters: `Exam date moved to ${newDate}. Remaining preparation timeline updated.`
     });
 
     this.save();
     return exam;
   }
-
-  addNotification(notif) {
-    this.state.notifications.unshift(notif);
-    // Keep max 25 notifications
-    if (this.state.notifications.length > 25) {
-      this.state.notifications.pop();
-    }
-  }
-
-  markAllNotificationsRead() {
-    this.state.notifications.forEach(n => n.unread = false);
-    this.save();
-  }
 }
 
-// Export singleton instance
 export const store = new AcadenceStore();
